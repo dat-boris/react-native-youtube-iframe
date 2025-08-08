@@ -54,7 +54,8 @@
       } = JSON.parse(UrlQueryData);
 
       function sendMessageToRN(msg) {
-        window.ReactNativeWebView.postMessage(JSON.stringify(msg));
+        const iframeWindow = document.getElementById(randomPlayerId).contentWindow;
+        (window.ReactNativeWebView || iframeWindow).postMessage(JSON.stringify(msg));
       }
 
       let metaString = '';
