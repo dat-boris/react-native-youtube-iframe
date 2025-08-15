@@ -54,8 +54,21 @@
       } = JSON.parse(UrlQueryData);
 
       function sendMessageToRN(msg) {
-        const iframeWindow = document.getElementById(randomPlayerId).contentWindow;
-        (window.ReactNativeWebView || iframeWindow).postMessage(JSON.stringify(msg));
+
+        let iframeWindow = null;
+        if (window.opener) {
+          iframeWindow = window.opener;
+        } else if (window.parent) {
+          iframeWindow = window.parent;
+          //iframeWindow = window;
+        } else {
+          // TODO: maybe need to check window.postMessage is available.
+          // see onBridgeReady in react-native-web-webview demo.
+          iframeWindow = window;
+        }
+
+        // "*" allow localhost testing sine iframe parent is cross origin
+        (window.ReactNativeWebView || iframeWindow).postMessage(JSON.stringify(msg), "*");
       }
 
       let metaString = '';
@@ -154,6 +167,8 @@
         try {
           const parsedData = JSON.parse(data);
           const {eventName, meta} = parsedData;
+
+          console.log('[youtube-iframe] got postMessage', eventName);
 
           switch (eventName) {
             case 'playVideo':

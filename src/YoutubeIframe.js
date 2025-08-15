@@ -62,7 +62,12 @@ const YoutubeIframe = (props, ref) => {
       }
 
       const message = JSON.stringify({eventName, meta});
-      webViewRef.current.postMessage(message);
+
+      console.log(
+        '[react-native-youtube-iframe] Sending message - eventName',
+        eventName,
+      );
+      webViewRef.current.postMessage(message, '*');
     },
     [playerReady],
   );
@@ -187,6 +192,10 @@ const YoutubeIframe = (props, ref) => {
       try {
         const message = JSON.parse(event.nativeEvent.data);
 
+        console.log(
+          '[react-native-youtube-iframe] Received message:',
+          message.eventType,
+        );
         switch (message.eventType) {
           case 'fullScreenChange':
             onFullScreenChange(message.data);
