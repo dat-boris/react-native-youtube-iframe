@@ -57,15 +57,19 @@ const YoutubeIframe = (props, ref) => {
 
   const sendPostMessage = useCallback(
     (eventName, meta) => {
+      console.log('[react-native-youtube-iframe] sendPostMessage', eventName, meta);
       if (!playerReady) {
+        console.warn('[react-native-youtube-iframe] sendPostMessage - player not ready');
         return;
       }
 
       const message = JSON.stringify({eventName, meta});
 
       console.log(
-        '[react-native-youtube-iframe] Sending message - eventName',
+        '[react-native-youtube-iframe] Sending message (no star) - eventName',
         eventName,
+        'webViewRef.current.postMessage',
+        webViewRef.current.postMessage,
       );
       webViewRef.current.postMessage(message, '*');
     },
@@ -131,6 +135,7 @@ const YoutubeIframe = (props, ref) => {
   );
 
   useEffect(() => {
+    console.log('[react-native-youtube-iframe] useEffect play', play);
     if (play) {
       sendPostMessage('playVideo', {});
     } else {
@@ -189,6 +194,7 @@ const YoutubeIframe = (props, ref) => {
 
   const onWebMessage = useCallback(
     event => {
+      console.log('[react-native-youtube-iframe] onWebMessage', event);
       try {
         const message = JSON.parse(event.nativeEvent.data);
 

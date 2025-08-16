@@ -22,6 +22,7 @@
     </style>
   </head>
   <body>
+    <div id="debug"></div>
     <div class="container">
       <div class="video" id="player"></div>
     </div>
@@ -29,6 +30,15 @@
     <script>
       const randomPlayerId = 'player' + Date.now();
       document.getElementById('player').id = randomPlayerId;
+
+      // Just a simple post message test
+      // setInterval(() => {
+      //   window.ReactNativeWebView.postMessage("Hello from iframe.html");
+      //   // window.ReactNativeWebView.postMessage("Hello from iframe.html", "*");
+      //   // window.postMessage("Hello from iframe.html", "*");
+      //   // window.parent.postMessage("Hello from iframe.html", "*");
+      //   // window.opener.postMessage("Hello from iframe.html", "*");
+      // }, 1000);
 
       const parsedUrl = new URL(window.location.href);
       const UrlQueryData = parsedUrl.searchParams.get('data');
@@ -68,8 +78,21 @@
         }
 
         // "*" allow localhost testing sine iframe parent is cross origin
-        (window.ReactNativeWebView || iframeWindow).postMessage(JSON.stringify(msg), "*");
+        (window.ReactNativeWebView || iframeWindow).postMessage(JSON.stringify(msg));
       }
+
+      const isAndroid = navigator.userAgent.includes('Android');
+      const isWebview = navigator.userAgent.includes('; wv');
+      const isAndroidWebview = isAndroid && isWebview;
+      alert(`isAndroidWebview ${isAndroidWebview}`);
+
+      const writeDebug = (msg) => {
+        const now = new Date();
+        const timestamp = now.toLocaleTimeString();
+        document.getElementById('debug').innerHTML = `[${timestamp}] ${msg}`;
+      };
+
+      writeDebug(`[youtube-iframe] starting with UrlQueryData ${UrlQueryData}`);
 
       let metaString = '';
       if (contentScale_s) {
@@ -161,8 +184,10 @@
       document.addEventListener('mozfullscreenchange', onFullScreenChange);
       document.addEventListener('webkitfullscreenchange', onFullScreenChange);
 
-      window.addEventListener('message', function (event) {
+      // https://github.com/react-native-webview/react-native-webview/issues/356
+      document.addEventListener('message', function (event) {
         const {data} = event;
+        writeDebug(`[youtube-iframe] got postMessage -> ${data}`);
 
         try {
           const parsedData = JSON.parse(data);
@@ -197,6 +222,7 @@
           }
         } catch (error) {
           console.error('Error parsing data', event, error);
+          writeDebug(`[youtube-iframe] got postMessage -> ${data} - error ${error}`);
         }
       });
     </script>
