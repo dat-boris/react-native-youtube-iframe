@@ -247,6 +247,18 @@
             case 'getAvailablePlaybackRates':
               sendMessageToRN({eventType: 'getAvailablePlaybackRates', data: player.getAvailablePlaybackRates()});
               break;
+
+            case 'exitFullscreen':
+              if (document.exitFullscreen) {
+                document.exitFullscreen();
+              } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+              } else if (document.mozCancelFullScreen) {
+                document.mozCancelFullScreen();
+              } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+              }
+              break;
           }
         } catch (error) {
           console.error('Error parsing data', event, error);

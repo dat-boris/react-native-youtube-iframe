@@ -118,6 +118,9 @@ const YoutubeIframe = (props, ref) => {
       seekTo: (seconds, allowSeekAhead) => {
         sendPostMessage('seekTo', {seconds, allowSeekAhead});
       },
+      exitFullscreen: () => {
+        sendPostMessage('exitFullscreen', {});
+      },
     }),
     [sendPostMessage],
   );
